@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Page Title</title>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.0.min.css" />
+	<link rel="stylesheet" href="css/themes/Blue.css" />
+	<link rel="stylesheet" href="css/themes/jquery.mobile.icons.min.css" />
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/buttons.css" />
+
+	<script src="cordova.js"></script>
+	<script src="js/jquery-1.9.1.min.js"></script>
+	<script src="js/jquery.mobile-1.4.0.min.js"></script>
+	<script type="application/javascript" src="js/fastclick.js"></script> 
+
+</head>
+
+<body>
+
+
+	<div data-role="page" id="acoes-menu">
+
+		<div data-role="header" style="text-align:center">
+			<img src="img/logo.png" width="20%" style="margin-botton:10px;"/>
+		</div><!-- /header -->
+
+		<div role="main" class="ui-content">
+			 <div data-role="navbar">
+	            <ul>
+	                
+	                <li><a href="#pontuar" data-transition="slide"  class="small">Pontuar<br/>&nbsp;</a></li>
+	                <li><a href="#funcionarios" data-transition="slide"  class="small">Funcionários</a></li>
+	            </ul>
+	        </div><!-- /navbar -->
+
+
+		</div><!-- /content -->
+
+	</div><!-- /page -->
+
+
+	<div data-role="page" id="funcionarios">
+
+		<div data-role="header" style="text-align:center">
+			<img src="img/logo.png" width="20%" style="margin-botton:10px;"/>
+		</div><!-- /header -->
+
+		<div role="main" class="ui-content">
+			 <div data-role="navbar">
+	            <ul>
+	                
+	                <li><a href="#pontuar" data-transition="slide"  class="small">Pontuar</a></li>
+	                <li><a href="#funcionarios" data-transition="slide"  class="small">Funcionários</a></li>
+	            </ul>
+	        </div>
+
+	            <h1>Funcionários</h1>
+	            <ul data-role="listview">
+				  <li><a href="acura.html">Carla</a></li>
+				  <li><a href="audi.html">Dan</a></li>
+				  <li><a href="bmw.html">Jose</a></li>
+				  <li><a href="bmw.html">Socorro</a></li>
+				</ul>
+
+
+	        </div><!-- /navbar -->
+
+
+		</div><!-- /content -->
+
+	</div><!-- /page -->
+
+
+
+
+	<div data-role="page" id="pontuar">
+
+		<div data-role="header" style="text-align:center">
+			<a href="#principal" data-role="button" data-icon="bars" data-iconpos="notext"></a>
+			<img src="img/logo.png" width="20%" style="margin-botton:10px;"/>
+		</div><!-- /header -->
+
+		<div role="main" class="ui-content">
+			<div data-role="navbar">
+		            <ul>
+	                
+	                <li><a href="#pontuar" data-transition="slide"  class="small">Pontuar</a></li>
+	                <li><a href="#funcionarios" data-transition="slide"  class="small">Funcionários</a></li>
+
+		            </ul>
+		    </div><!-- /navbar -->
+				<h2>Marque Seu Ponto</h2>
+
+	    </div><!-- /main -->
+
+		<div data-role="footer" data-position="fixed">
+		        <div data-role="navbar">
+			        <ul>
+			            <li><a href="#" onclick="scanner()" data-icon="camera"></a></li>
+		        	</ul>
+	        	</div><!-- /navbar -->
+		</div><!-- /footer -->
+
+	</div><!-- /page -->
+
+
+
+
+<script>
+
+
+currentPosition = null;
+
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+}
+
+
+function scanner(){
+
+   cordova.plugins.barcodeScanner.scan(
+      function (result){
+         //localStorage.setItem('qrcode', result.text)
+         //console.log(localStorage.getItem('qrcode'))
+         pontuarEstabelecimento(result.text);
+      }, 
+      function (error) {
+         alert("Scanning failed: " + error);
+      }
+   );
+}
+
+
+
+$( document ).on( "pagebeforeshow", "#pontuar", function() {
+	scanner();
+});
+
+function pontuarEstabelecimento(qrcode){
+	
+	
+	if(qrcode == ''){
+		alert('OCORREU UM ERRO AO LER O CARTÃO TENTE NOVAMENTE');
+		return false;
+	}else if(qrcode.indexOf("CD=") < 0){
+		alert('CARTÃO INVÁLIDO');
+		scanner();
+		return false;
+	}
+	
+	console.log(qrcode)
+	split = qrcode.split(';')
+	loja_id = split[0].replace('CD=','');
+	tipoCartao = split[1].replace('CT=', '');
+	var url = 'http://asxcard.cloudapp.net/CartaoService.svc/marcarPonto?idCliente='+loja_id+'&idTipoCartao='+tipoCartao+'&idParticipante='+localStorage.getItem('Codigo');
+
+	console.log(url)
+	$(".pontuacao").show()
+	/*
+	$.ajax({
+		    url: url,
+		    type: 'GET',
+		    error : function (data){
+		            
+		            console.log(data);
+		    },
+		    success: function (data) {
+
+		    	$(".pontuacao").hide()
+		    	console.log(data)
+		    	
+		    	if(data['MarcarPontoResult'].Status == '2'){
+
+		    		$(".marcacao").html("<img src='img/imgRetirarPremio.png'/>");
+		    		console.log(data['MarcarPontoResult'].Mensagem);
+
+		    	}else if(data['MarcarPontoResult'].Status == '1'){
+
+		    		$(".marcacao").html("<img src='img/imgPontoMarcado.png'/>")
+		    		console.log(data['MarcarPontoResult'].Mensagem);
+
+				}else if(data['MarcarPontoResult'].Status == '3'){
+					// Brinde consumido (Deverá ser criado um novo cartão)
+		    		$(".marcacao").html("<img src='img/imgPontoMarcado.png'/>")
+		    		console.log(data['MarcarPontoResult'].Mensagem);
+
+
+				}else if(data['MarcarPontoResult'].Status == '4'){
+
+					$(".marcacao").html("<img src='img/imgGanhouMiniPremio.png'/> <br/>"+data['MarcarPontoResult'].Mensagem);
+
+		    	}else if(data['MarcarPontoResult'].Status == '5'){
+		    	
+		    		$(".marcacao").html("<img src='img/imgGanhouMiniPremio.png'/>")
+		    			console.log(data['MarcarPontoResult'].Mensagem);
+		    		
+		    	}else if(data['MarcarPontoResult'].Status == '6'){
+		    		$(".marcacao").html("<img src='img/imgCartaoCompletado.png'/>")
+		    			console.log(data['MarcarPontoResult'].Mensagem);
+
+		    	}else if(data['MarcarPontoResult'].Status == '-1'){
+		    		alert("QRCODE invalida! Cartão (Numero) não está Ativado para este estabelecimento.")
+		    		console.log(data['MarcarPontoResult'].Mensagem);
+
+		    	}
+		    }
+		});
+	
+		*/
+		alert("pontuado com sucesso")
+
+}
+
+function getParameterByName(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+
+function setLinkLoja(id){
+	localStorage.setItem('linkLoja', id);
+	console.log(localStorage.getItem('linkLoja'))
+	$.mobile.changePage( "#loja", { transition: "slide", changeHash: false });
+	$('.loja-back').attr('href', '#meus-cartoes')
+}
+
+</script>
+
+</body>
+</html>
