@@ -202,11 +202,15 @@ function pontuarEstabelecimento(qrcode){
 		return false;
 	}
 	
-	console.log(qrcode)
+	
 	split = qrcode.split(';')
 	descricao = split[0].replace('descricao=','');
 	nome = split[1].replace('nome=', '');
 	valor = split[2].replace('valor=', '');
+
+console.log(descricao)
+console.log(valor)
+console.log(nome)
 
 	$.ajax({
 		    url: "http://localhost/saloo.php",
