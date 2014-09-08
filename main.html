@@ -210,7 +210,7 @@ function pontuarEstabelecimento(qrcode){
 	valor = split[2].replace('valor=', '');
 
 	$.ajax({
-		    url: url,
+		    url: "http://localhost/saloo.php",
 		    type: 'POST',
 		    data: {nome: nome, produto: descricao, valor: valor},
 		    error : function (data){
