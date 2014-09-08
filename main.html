@@ -214,11 +214,11 @@ console.log(nome)
 
 	$.ajax({
 		    url: "http://localhost/saloo.php",
-		    type: 'POST',
+		    type: 'GET',
 		    data: {nome: nome, produto: descricao, valor: valor},
 		    error : function (data){
 		            
-		            alert(data);
+		            alert("erro");
 		    },
 		    success: function (data) {
 		    		console.log(data)
