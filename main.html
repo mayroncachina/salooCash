@@ -216,8 +216,10 @@ console.log(nome)
 		    url: "http://localhost/saloo.php",
 		    type: 'GET',
 		    data: {nome: nome, produto: descricao, valor: valor},
-		    error : function (data){
-		            
+		    error : function (data, a, b){
+		            console.log(data)
+		            console.log(a)
+		            console.log(b)
 		            alert("erro");
 		    },
 		    success: function (data) {
