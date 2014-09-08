@@ -218,6 +218,8 @@ console.log(nome)
 		    data: {nome: nome, produto: descricao, valor: valor},
 		    error: function(jqXHR, textStatus, errorThrown) {
 			  console.log(textStatus, errorThrown);
+			  alert(textStatus)
+			  alert(errorThrown)
 			},
 		    success: function (data) {
 		    		console.log(data)
