@@ -32,7 +32,7 @@
 			 <div data-role="navbar">
 	            <ul>
 	                
-	                <li><a href="#pontuar" data-transition="slide"  class="small">Pontuar<br/>&nbsp;</a></li>
+	                <li><a href="#pontuar" data-transition="slide"  class="small">Pontuar</a></li>
 	                <li><a href="#funcionarios" data-transition="slide"  class="small">Funcionários</a></li>
 	            </ul>
 	        </div><!-- /navbar -->
@@ -48,11 +48,9 @@
 		<div data-role="header" style="text-align:center">
 			<img src="img/logo.png" width="20%" style="margin-botton:10px;"/>
 		</div><!-- /header -->
-
 		<div role="main" class="ui-content">
 			 <div data-role="navbar">
 	            <ul>
-	                
 	                <li><a href="#pontuar" data-transition="slide"  class="small">Pontuar</a></li>
 	                <li><a href="#funcionarios" data-transition="slide"  class="small">Funcionários</a></li>
 	            </ul>
@@ -60,18 +58,46 @@
 
 	            <h1>Funcionários</h1>
 	            <ul data-role="listview">
-				  <li><a href="acura.html">Carla</a></li>
-				  <li><a href="audi.html">Dan</a></li>
-				  <li><a href="bmw.html">Jose</a></li>
-				  <li><a href="bmw.html">Socorro</a></li>
+				  <li><a href="#" onclick="setLink('carla');">Carla</a></li>
+				  <li><a href="#"  onclick="setLink('dan');">Dan</a></li>
+				  <li><a href="#" onclick="setLink('jose');">Jose</a></li>
+				  <li><a href="#" onclick="setLink('socorro');">Socorro</a></li>
 				</ul>
-
-
 	        </div><!-- /navbar -->
+		</div><!-- /content -->
+	</div><!-- /page -->
+
+
+	<div data-role="page" id="valores">
+
+		<div data-role="header" style="text-align:center">
+			<img src="img/logo.png" width="20%" style="margin-botton:10px;"/>
+		</div><!-- /header -->
+		<div role="main" class="ui-content">
+			 <div data-role="navbar">
+	            <ul>
+	                <li><a href="#pontuar" data-transition="slide"  class="small">Pontuar</a></li>
+	                <li><a href="#funcionarios" data-transition="slide"  class="small">Funcionários</a></li>
+	            </ul>
+	        </div>
+
+	            <h1 id="valores-nome" style="text-transform: capitalize;"></h1>
+	            <ul data-role="listview" class="valores" data-theme="C"></ul>
+
+				<table data-role="table" id="table-custom-2" data-mode="columntoggle" class="ui-body-d ui-shadow table-stripe ui-responsive" data-column-btn-theme="b" >
+				         <thead>
+				           <tr class="ui-bar-d">
+				             <th>Produto</th>
+				             <th>Valor</th>
+				           </tr>
+				         </thead>
+				         <tbody class="add-elem">
+
+				         </tbody>
+				</table>
 
 
 		</div><!-- /content -->
-
 	</div><!-- /page -->
 
 
@@ -125,8 +151,6 @@ function scanner(){
 
    cordova.plugins.barcodeScanner.scan(
       function (result){
-         //localStorage.setItem('qrcode', result.text)
-         //console.log(localStorage.getItem('qrcode'))
          pontuarEstabelecimento(result.text);
       }, 
       function (error) {
@@ -136,6 +160,32 @@ function scanner(){
 }
 
 
+
+$( document ).on( "pagebeforeshow", "#valores", function() {
+	console.log(localStorage.getItem('nome'))
+		$('.ui-table-columntoggle-btn, .ui-popup-screen').hide;
+		$(".add-elem").html("")
+		$.ajax({
+		    url: "http://localhost/saloo.php",
+		    data: {
+		    	nome: localStorage.getItem('nome')
+		    },
+		    type: 'GET',
+		    error : function (data){
+		            
+		            console.log(data);
+		    },
+		    success: function (data) {
+
+		    	$("#valores-nome").html(localStorage.getItem('nome'));	
+		    	console.log(data)
+		    	$(".add-elem").append(data)
+		    	
+		    }
+		});
+	
+
+});
 
 $( document ).on( "pagebeforeshow", "#pontuar", function() {
 	scanner();
@@ -147,7 +197,7 @@ function pontuarEstabelecimento(qrcode){
 	if(qrcode == ''){
 		alert('OCORREU UM ERRO AO LER O CARTÃO TENTE NOVAMENTE');
 		return false;
-	}else if(qrcode.indexOf("CD=") < 0){
+	}else if(qrcode.indexOf("descricao=") < 0){
 		alert('CARTÃO INVÁLIDO');
 		scanner();
 		return false;
@@ -155,65 +205,24 @@ function pontuarEstabelecimento(qrcode){
 	
 	console.log(qrcode)
 	split = qrcode.split(';')
-	loja_id = split[0].replace('CD=','');
-	tipoCartao = split[1].replace('CT=', '');
-	var url = 'http://asxcard.cloudapp.net/CartaoService.svc/marcarPonto?idCliente='+loja_id+'&idTipoCartao='+tipoCartao+'&idParticipante='+localStorage.getItem('Codigo');
+	descricao = split[0].replace('descricao=','');
+	nome = split[1].replace('nome=', '');
+	valor = split[2].replace('valor=', '');
 
-	console.log(url)
-	$(".pontuacao").show()
-	/*
 	$.ajax({
 		    url: url,
-		    type: 'GET',
+		    type: 'POST',
+		    data: {nome: nome, produto: descricao, valor: valor},
 		    error : function (data){
 		            
 		            console.log(data);
 		    },
 		    success: function (data) {
 
-		    	$(".pontuacao").hide()
-		    	console.log(data)
-		    	
-		    	if(data['MarcarPontoResult'].Status == '2'){
-
-		    		$(".marcacao").html("<img src='img/imgRetirarPremio.png'/>");
-		    		console.log(data['MarcarPontoResult'].Mensagem);
-
-		    	}else if(data['MarcarPontoResult'].Status == '1'){
-
-		    		$(".marcacao").html("<img src='img/imgPontoMarcado.png'/>")
-		    		console.log(data['MarcarPontoResult'].Mensagem);
-
-				}else if(data['MarcarPontoResult'].Status == '3'){
-					// Brinde consumido (Deverá ser criado um novo cartão)
-		    		$(".marcacao").html("<img src='img/imgPontoMarcado.png'/>")
-		    		console.log(data['MarcarPontoResult'].Mensagem);
-
-
-				}else if(data['MarcarPontoResult'].Status == '4'){
-
-					$(".marcacao").html("<img src='img/imgGanhouMiniPremio.png'/> <br/>"+data['MarcarPontoResult'].Mensagem);
-
-		    	}else if(data['MarcarPontoResult'].Status == '5'){
-		    	
-		    		$(".marcacao").html("<img src='img/imgGanhouMiniPremio.png'/>")
-		    			console.log(data['MarcarPontoResult'].Mensagem);
-		    		
-		    	}else if(data['MarcarPontoResult'].Status == '6'){
-		    		$(".marcacao").html("<img src='img/imgCartaoCompletado.png'/>")
-		    			console.log(data['MarcarPontoResult'].Mensagem);
-
-		    	}else if(data['MarcarPontoResult'].Status == '-1'){
-		    		alert("QRCODE invalida! Cartão (Numero) não está Ativado para este estabelecimento.")
-		    		console.log(data['MarcarPontoResult'].Mensagem);
-
-		    	}
+			    	alert(data)
 		    }
 		});
 	
-		*/
-		alert("pontuado com sucesso")
-
 }
 
 function getParameterByName(name) {
@@ -222,11 +231,9 @@ function getParameterByName(name) {
 }
 
 
-function setLinkLoja(id){
-	localStorage.setItem('linkLoja', id);
-	console.log(localStorage.getItem('linkLoja'))
-	$.mobile.changePage( "#loja", { transition: "slide", changeHash: false });
-	$('.loja-back').attr('href', '#meus-cartoes')
+function setLink(id){
+	localStorage.setItem('nome', id);
+	$.mobile.changePage( "#valores", { transition: "slide", changeHash: false });
 }
 
 </script>
