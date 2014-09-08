@@ -106,7 +106,6 @@
 	<div data-role="page" id="pontuar">
 
 		<div data-role="header" style="text-align:center">
-			<a href="#principal" data-role="button" data-icon="bars" data-iconpos="notext"></a>
 			<img src="img/logo.png" width="20%" style="margin-botton:10px;"/>
 		</div><!-- /header -->
 
@@ -215,10 +214,10 @@ function pontuarEstabelecimento(qrcode){
 		    data: {nome: nome, produto: descricao, valor: valor},
 		    error : function (data){
 		            
-		            console.log(data);
+		            alert(data);
 		    },
 		    success: function (data) {
-
+		    		console.log(data)
 			    	alert(data)
 		    }
 		});
