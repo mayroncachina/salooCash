@@ -165,7 +165,7 @@ $( document ).on( "pagebeforeshow", "#valores", function() {
 		$('.ui-table-columntoggle-btn, .ui-popup-screen').hide;
 		$(".add-elem").html("")
 		$.ajax({
-		    url: "http://localhost/saloo.php",
+		    url: "http://sandbox.cachina.com.br/saloo.php",
 		    crossDomain: true,
 		    data: {
 		    	nome: localStorage.getItem('nome')
@@ -214,7 +214,7 @@ console.log(valor)
 console.log(nome)
 
 	$.ajax({
-		    url: "http://localhost/saloo.php",
+		    url: "http://sandbox.cachina.com.br/saloo.php",
 		    type: 'POST',
 		    crossDomain: true,
 		    data: {nome: nome, produto: descricao, valor: valor},
