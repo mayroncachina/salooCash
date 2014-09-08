@@ -166,6 +166,7 @@ $( document ).on( "pagebeforeshow", "#valores", function() {
 		$(".add-elem").html("")
 		$.ajax({
 		    url: "http://localhost/saloo.php",
+		    crossDomain: true,
 		    data: {
 		    	nome: localStorage.getItem('nome')
 		    },
@@ -214,7 +215,8 @@ console.log(nome)
 
 	$.ajax({
 		    url: "http://localhost/saloo.php",
-		    type: 'GET',
+		    type: 'POST',
+		    crossDomain: true,
 		    data: {nome: nome, produto: descricao, valor: valor},
 		    error: function(jqXHR, textStatus, errorThrown) {
 			  console.log(textStatus, errorThrown);
