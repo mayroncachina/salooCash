@@ -216,12 +216,9 @@ console.log(nome)
 		    url: "http://localhost/saloo.php",
 		    type: 'GET',
 		    data: {nome: nome, produto: descricao, valor: valor},
-		    error : function (data, a, b){
-		            console.log(data)
-		            console.log(a)
-		            console.log(b)
-		            alert("erro");
-		    },
+		    error: function(jqXHR, textStatus, errorThrown) {
+			  console.log(textStatus, errorThrown);
+			},
 		    success: function (data) {
 		    		console.log(data)
 			    	alert("deu certo")
